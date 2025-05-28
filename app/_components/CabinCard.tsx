@@ -1,10 +1,11 @@
 'use client';
 
-import { UsersIcon } from '@heroicons/react/24/solid';
-import { type Cabin } from '../cabins/page';
 import { useState } from 'react';
 
+import { UsersIcon } from '@heroicons/react/24/solid';
+
 import Image from 'next/image';
+import { Cabin } from './CabinList';
 
 type Props = {
   cabin: Cabin;
@@ -19,6 +20,7 @@ function CabinCard({ cabin }: Props) {
       <div className='relative flex-1'>
         <Image
           src={images[imageIndex]}
+          sizes='auto'
           fill
           alt={`Cabin ${name}`}
           className='object-cover border-r border-primary-800'
