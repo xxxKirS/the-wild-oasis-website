@@ -3,6 +3,11 @@ import Link from 'next/link';
 
 import about1 from '@/public/about-1.jpg';
 import about2 from '@/public/about-2.jpg';
+import { Metadata } from 'next';
+
+export const metadata: Metadata = {
+  title: 'About',
+};
 
 export default function Page() {
   return (

@@ -9,6 +9,7 @@ export default function Home() {
       <Image
         src={bg}
         fill
+        quality={100}
         placeholder='blur'
         alt='Mountains and forests with two cabins'
         className='object-cover object-top'

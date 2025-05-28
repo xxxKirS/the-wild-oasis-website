@@ -1,5 +1,9 @@
+'use client';
+
 import { UsersIcon } from '@heroicons/react/24/solid';
-import { Cabin } from '../cabins/page';
+import { type Cabin } from '../cabins/page';
+import { useState } from 'react';
+
 import Image from 'next/image';
 
 type Props = {
@@ -7,15 +11,30 @@ type Props = {
 };
 
 function CabinCard({ cabin }: Props) {
-  const { id, name, maxCapacity, regularPrice, discount, image } = cabin;
+  const { id, name, maxCapacity, regularPrice, discount, images } = cabin;
+  const [imageIndex, setImageIndex] = useState(0);
 
   return (
     <div className='flex border-primary-800 border'>
-      <Image
-        src={image}
-        alt={`Cabin ${name}`}
-        className='flex-1 border-r border-primary-800'
-      />
+      <div className='relative'>
+        <Image
+          src={images[imageIndex]}
+          width={200}
+          height={200}
+          alt={`Cabin ${name}`}
+          className='flex-1 border-r border-primary-800'
+        />
+        <div className='absolute bottom-8 left-1/2 flex gap-4'>
+          {images.length > 1 &&
+            images.map((_, i) => (
+              <div
+                className='w-4 h-4 bg-slate-300 rounded-full'
+                key={i}
+                onClick={() => setImageIndex(i)}
+              ></div>
+            ))}
+        </div>
+      </div>
 
       <div className='flex-grow'>
         <div className='pt-5 pb-4 px-7 bg-primary-950'>
