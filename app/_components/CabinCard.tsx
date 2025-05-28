@@ -15,14 +15,13 @@ function CabinCard({ cabin }: Props) {
   const [imageIndex, setImageIndex] = useState(0);
 
   return (
-    <div className='flex border-primary-800 border'>
-      <div className='relative'>
+    <div className='flex border-primary-800 border '>
+      <div className='relative flex-1'>
         <Image
           src={images[imageIndex]}
-          width={200}
-          height={200}
+          fill
           alt={`Cabin ${name}`}
-          className='flex-1 border-r border-primary-800'
+          className='object-cover border-r border-primary-800'
         />
         <div className='absolute bottom-8 left-1/2 flex gap-4'>
           {images.length > 1 &&
