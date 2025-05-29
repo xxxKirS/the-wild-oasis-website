@@ -1,4 +1,5 @@
 import { getCabins } from '../_lib/data-service';
+import { unstable_noStore } from 'next/cache';
 
 import CabinCard from './CabinCard';
 
@@ -15,6 +16,7 @@ export type Cabin = {
 type Cabins = Cabin[];
 
 export default async function CabinList() {
+  unstable_noStore();
   const cabins: Cabins = await getCabins();
   return (
     <>

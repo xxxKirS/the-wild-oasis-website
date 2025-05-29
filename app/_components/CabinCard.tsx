@@ -20,7 +20,7 @@ function CabinCard({ cabin }: Props) {
       <div className='relative flex-1'>
         <Image
           src={images[imageIndex]}
-          sizes='auto'
+          sizes='200'
           fill
           alt={`Cabin ${name}`}
           className='object-cover border-r border-primary-800'

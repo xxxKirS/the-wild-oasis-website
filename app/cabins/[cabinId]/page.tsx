@@ -1,4 +1,5 @@
-import { getCabin } from '@/app/_lib/data-service';
+import TextExpander from '@/app/_components/TextExpender';
+import { getCabin, getCabins } from '@/app/_lib/data-service';
 import { EyeSlashIcon, MapPinIcon, UsersIcon } from '@heroicons/react/24/solid';
 import Image from 'next/image';
 import React from 'react';
@@ -11,6 +12,14 @@ export async function generateMetadata({ params }: Props) {
   const { cabinId } = await params;
   const { name } = await getCabin(+cabinId);
   return { title: `Cabin ${name}` };
+}
+
+export async function generateStaticParams() {
+  const cabins = await getCabins();
+
+  return cabins.map((cabin) => ({
+    cabinId: cabin.id.toString(),
+  }));
 }
 
 export default async function Page({ params }: Props) {
@@ -39,9 +48,10 @@ export default async function Page({ params }: Props) {
             Cabin {name}
           </h3>
 
-          <p className='text-lg text-primary-300 mb-10'>{description}</p>
+          {/* <p className='text-lg text-primary-300 mb-10'>{description}</p> */}
+          <TextExpander>{description ?? ''}</TextExpander>
 
-          <ul className='flex flex-col gap-4 mb-7'>
+          <ul className='flex flex-col gap-4 mb-7 mt-10'>
             <li className='flex gap-3 items-center'>
               <UsersIcon className='h-5 w-5 text-primary-600' />
               <span className='text-lg'>

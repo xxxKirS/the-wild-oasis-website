@@ -5,6 +5,7 @@ const nextConfig: NextConfig = {
   images: {
     domains: [process.env.SUPABASE_DOMAIN!], // <- your Supabase project domain
   },
+  // output: 'export',
 };
 
 export default nextConfig;
