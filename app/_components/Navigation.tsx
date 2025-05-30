@@ -1,9 +1,12 @@
+'use client';
+
 import {
   HomeModernIcon,
   InformationCircleIcon,
   UserCircleIcon,
 } from '@heroicons/react/24/solid';
 import Link from 'next/link';
+import { usePathname } from 'next/navigation';
 import React from 'react';
 
 const navLinks = [
@@ -25,6 +28,8 @@ const navLinks = [
 ];
 
 export default function Navigation() {
+  const pathname = usePathname();
+
   return (
     <nav className='z-10 text-xl'>
       <ul className='flex gap-16 items-center'>
@@ -32,7 +37,9 @@ export default function Navigation() {
           <li key={link.name}>
             <Link
               href={link.href}
-              className='hover:text-accent-400 transition-colors flex gap-2'
+              className={`hover:text-accent-400 transition-colors flex gap-2 ${
+                pathname.includes(link.href) && 'text-accent-400'
+              }`}
             >
               <span>{link.icon}</span>
               <span>{link.name}</span>

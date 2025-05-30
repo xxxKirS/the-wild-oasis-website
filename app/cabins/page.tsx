@@ -1,15 +1,27 @@
 import { Metadata } from 'next';
-import CabinList from '../_components/CabinList';
 import { Suspense } from 'react';
-import Spinner from '../_components/Spinner';
+import { type SearchParams } from 'next/dist/server/request/search-params';
 
-export const revalidate = 3600;
+import CabinList from '../_components/CabinList';
+import Spinner from '../_components/Spinner';
+import Filter from '../_components/Filter';
+
+// export const revalidate = 3600;
 
 export const metadata: Metadata = {
   title: 'Cabins',
 };
 
-export default function Page() {
+type Props = {
+  searchParams: SearchParams;
+};
+
+export type CapacityFilter = 'all' | 'small' | 'medium' | 'large';
+
+export default async function Page({ searchParams }: Props) {
+  const { capacity } = await searchParams;
+  const capacityFilter: CapacityFilter = (capacity as CapacityFilter) ?? 'all';
+
   return (
     <div>
       <h1 className='text-4xl mb-5 text-accent-400 font-medium'>
@@ -24,8 +36,12 @@ export default function Page() {
         Welcome to paradise.
       </p>
 
-      <Suspense fallback={<Spinner />}>
-        <CabinList />
+      <div className='flex justify-end mb-8'>
+        <Filter />
+      </div>
+
+      <Suspense fallback={<Spinner />} key={capacityFilter}>
+        <CabinList capacityFilter={capacityFilter} />
       </Suspense>
     </div>
   );
