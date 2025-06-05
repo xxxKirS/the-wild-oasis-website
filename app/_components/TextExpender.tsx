@@ -14,7 +14,8 @@ function TextExpander({ children }: Props) {
   // Measure expanded height once after mount
   useLayoutEffect(() => {
     if (fullTextRef.current) {
-      setExpandedHeight(fullTextRef.current.scrollHeight);
+      const height = fullTextRef.current.getBoundingClientRect().height;
+      setExpandedHeight(height + 20);
     }
   }, []);
 
@@ -27,16 +28,15 @@ function TextExpander({ children }: Props) {
 
   return (
     <span
-      className={`${
-        expandedHeight &&
-        !isExpanded &&
-        `inline-block h-[${expandedHeight}] overflow-hidden align-top`
+      className={`inline-block align-top transition-all duration-300 ${
+        !isExpanded && expandedHeight ? 'overflow-hidden' : 'overflow-visible'
       }`}
+      style={expandedHeight ? { height: `${expandedHeight}px` } : undefined}
     >
       {/* Hidden full text for measuring height */}
       <span
         ref={fullTextRef}
-        className='absolute hidden -z-10 whitespace-pre-wrap'
+        className='absolute invisible whitespace-pre-wrap pointer-events-none'
       >
         {children}
       </span>

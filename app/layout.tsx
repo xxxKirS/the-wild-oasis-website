@@ -3,6 +3,7 @@ import { Josefin_Sans } from 'next/font/google';
 
 import Header from './_components/Header';
 import '@/app/_styles/globals.css';
+import 'react-day-picker/dist/style.css';
 
 const josefin = Josefin_Sans({
   subsets: ['latin'],
