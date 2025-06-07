@@ -40,10 +40,8 @@ function DateSelector({ settings, cabin, bookedDates }: Props) {
     const rangeIsExist = getRange(id);
     if (!rangeIsExist) {
       newRange(id);
-      console.log('qwe');
     } else {
       setSelectedRange(rangeIsExist);
-      console.log('zyina');
     }
   }, [id, getRange, newRange]);
 
