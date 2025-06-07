@@ -5,6 +5,8 @@ import { type SearchParams } from 'next/dist/server/request/search-params';
 import CabinList from '../_components/CabinList';
 import Spinner from '../_components/Spinner';
 import Filter from '../_components/Filter';
+import ReservationReminder from '../_components/ReservationReminder';
+import { CapacityFilterType } from '../_types/types';
 
 // export const revalidate = 3600;
 
@@ -16,11 +18,10 @@ type Props = {
   searchParams: SearchParams;
 };
 
-export type CapacityFilter = 'all' | 'small' | 'medium' | 'large';
-
 export default async function Page({ searchParams }: Props) {
   const { capacity } = await searchParams;
-  const capacityFilter: CapacityFilter = (capacity as CapacityFilter) ?? 'all';
+  const capacityFilter: CapacityFilterType =
+    (capacity as CapacityFilterType) ?? 'all';
 
   return (
     <div>
@@ -42,6 +43,7 @@ export default async function Page({ searchParams }: Props) {
 
       <Suspense fallback={<Spinner />} key={capacityFilter}>
         <CabinList capacityFilter={capacityFilter} />
+        <ReservationReminder />
       </Suspense>
     </div>
   );

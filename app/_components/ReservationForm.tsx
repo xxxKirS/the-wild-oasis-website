@@ -1,12 +1,17 @@
-import { Cabin } from './CabinList';
+'use client';
+
+import { useReservationContext } from '../_context/ReservationContext';
+import { type Cabin } from '../_types/types';
 
 type Props = {
   cabin: Cabin;
 };
 
 function ReservationForm({ cabin }: Props) {
-  // CHANGE
   const { maxCapacity } = cabin;
+  const { getRange } = useReservationContext();
+
+  const range = getRange(cabin.id);
 
   return (
     <div className=''>

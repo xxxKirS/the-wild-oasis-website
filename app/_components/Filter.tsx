@@ -1,11 +1,11 @@
 'use client';
 
 import React from 'react';
-import { CapacityFilter } from '../cabins/page';
 import { usePathname, useRouter, useSearchParams } from 'next/navigation';
+import { type CapacityFilterType } from '../_types/types';
 
 const capacityOptions: {
-  capacity: CapacityFilter;
+  capacity: CapacityFilterType;
   guests: [number, number] | 'All cabins';
 }[] = [
   {
@@ -33,7 +33,7 @@ export default function Filter() {
 
   const capacityParams = searchParams.get('capacity') ?? 'all';
 
-  function handleFilter(capacity: CapacityFilter) {
+  function handleFilter(capacity: CapacityFilterType) {
     const params = new URLSearchParams(searchParams);
     params.set('capacity', capacity);
     router.replace(`${pathname}?${params.toString()}`);

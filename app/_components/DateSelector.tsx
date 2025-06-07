@@ -1,13 +1,12 @@
 'use client';
 
 import { isWithinInterval } from 'date-fns';
-import { useState } from 'react';
 import { DateRange, DayPicker } from 'react-day-picker';
-import 'react-day-picker/dist/style.css';
-import { Settings } from '../_lib/data-service';
-import { Cabin } from './CabinList';
+import { useReservationContext } from '../_context/ReservationContext';
+import { useEffect, useState } from 'react';
+import { type Cabin, type Settings } from '../_types/types';
 
-function isAlreadyBooked(range, datesArr) {
+function isAlreadyBooked(range: DateRange, datesArr) {
   return (
     range.from &&
     range.to &&
@@ -24,29 +23,48 @@ type Props = {
 };
 
 function DateSelector({ settings, cabin, bookedDates }: Props) {
-  // CHANGE
-  const numNights = 23;
-  const { discount, regularPrice } = cabin;
-  const cabinPrice = numNights * (regularPrice - discount);
-  const initialRange: DateRange = {
+  const { setRange, resetRange, newRange, getRange } = useReservationContext();
+  const [selectedRange, setSelectedRange] = useState<DateRange>({
     from: undefined,
     to: undefined,
-  };
-  const [range, setRange] = useState<DateRange | undefined>(initialRange);
+  });
+
+  const numNights = 23;
+  const { discount, regularPrice, id } = cabin;
+  const cabinPrice = numNights * (regularPrice - discount);
+
   // SETTINGS
   const { minBookingLength, maxBookingLength } = settings;
 
-  function resetRange() {
-    setRange(initialRange);
-  }
+  useEffect(() => {
+    const rangeIsExist = getRange(id);
+    if (!rangeIsExist) {
+      newRange(id);
+      console.log('qwe');
+    } else {
+      setSelectedRange(rangeIsExist);
+      console.log('zyina');
+    }
+  }, [id, getRange, newRange]);
+
+  useEffect(() => {
+    const rangeIsExist = getRange(id);
+    if (rangeIsExist && (!rangeIsExist.from || !rangeIsExist.to)) {
+      console.log('1qwe');
+      resetRange(id);
+    }
+  }, []);
 
   return (
     <div className='flex flex-col justify-between'>
       <DayPicker
         className='pt-12 place-self-center'
         mode='range'
-        selected={range}
-        onSelect={setRange}
+        selected={selectedRange}
+        onSelect={(range) => {
+          setSelectedRange(range!);
+          setRange(range!, id);
+        }}
         min={minBookingLength + 1}
         max={maxBookingLength}
         fromMonth={new Date()}
@@ -84,10 +102,13 @@ function DateSelector({ settings, cabin, bookedDates }: Props) {
           ) : null}
         </div>
 
-        {range?.from || range?.to ? (
+        {selectedRange?.from || selectedRange?.to ? (
           <button
             className='border border-primary-800 py-2 px-4 text-sm font-semibold'
-            onClick={() => resetRange()}
+            onClick={() => {
+              resetRange(id);
+              setSelectedRange({ from: undefined, to: undefined });
+            }}
           >
             Clear
           </button>

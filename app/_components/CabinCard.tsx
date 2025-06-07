@@ -1,11 +1,11 @@
 'use client';
 
 import { useState } from 'react';
+import { type Cabin } from '../_types/types';
 
 import { UsersIcon } from '@heroicons/react/24/solid';
-
 import Image from 'next/image';
-import { Cabin } from './CabinList';
+import Link from 'next/link';
 
 type Props = {
   cabin: Cabin;
@@ -68,12 +68,12 @@ function CabinCard({ cabin }: Props) {
         </div>
 
         <div className='bg-primary-950 border-t border-t-primary-800 text-right'>
-          <a
+          <Link
             href={`/cabins/${id}`}
             className='border-l border-primary-800 py-4 px-6 inline-block hover:bg-accent-600 transition-all hover:text-primary-900'
           >
             Details & reservation &rarr;
-          </a>
+          </Link>
         </div>
       </div>
     </div>

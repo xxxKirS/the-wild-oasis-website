@@ -2,6 +2,7 @@ import { eachDayOfInterval } from 'date-fns';
 import { supabase } from './supabase';
 import { Cabin } from '../_components/CabinList';
 import { notFound } from 'next/navigation';
+import { Settings } from '../_types/types';
 
 /////////////
 // GET
@@ -126,13 +127,6 @@ export async function getBookedDatesByCabinId(cabinId: number) {
 
   return bookedDates;
 }
-
-export type Settings = {
-  minBookingLength: number;
-  maxBookingLength: number;
-  maxGuestsPerBooking: number;
-  breakfastPrice: number;
-};
 
 export async function getSettings(): Promise<Settings> {
   const { data, error } = await supabase.from('settings').select('*').single();
