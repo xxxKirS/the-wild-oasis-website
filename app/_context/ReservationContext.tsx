@@ -1,7 +1,7 @@
 'use client';
 
 import { createContext, useCallback, useContext, useState } from 'react';
-import { DateRange } from 'react-day-picker';
+import { type DateRange } from 'react-day-picker';
 
 type InitialState = { range: DateRange; cabinId: number }[];
 

@@ -1,9 +1,10 @@
 'use client';
 
 import { isWithinInterval } from 'date-fns';
-import { DateRange, DayPicker } from 'react-day-picker';
 import { useReservationContext } from '../_context/ReservationContext';
-import { useEffect, useState } from 'react';
+import { useEffect, useMemo, useState } from 'react';
+
+import { type DateRange, DayPicker } from 'react-day-picker';
 import { type Cabin, type Settings } from '../_types/types';
 
 function isAlreadyBooked(range: DateRange, datesArr) {
@@ -35,23 +36,15 @@ function DateSelector({ settings, cabin, bookedDates }: Props) {
 
   // SETTINGS
   const { minBookingLength, maxBookingLength } = settings;
+  const rangeIsExist = useMemo(() => getRange(id), [id, getRange]);
 
   useEffect(() => {
-    const rangeIsExist = getRange(id);
     if (!rangeIsExist) {
       newRange(id);
-    } else {
+    } else if (rangeIsExist) {
       setSelectedRange(rangeIsExist);
     }
-  }, [id, getRange, newRange]);
-
-  useEffect(() => {
-    const rangeIsExist = getRange(id);
-    if (rangeIsExist && (!rangeIsExist.from || !rangeIsExist.to)) {
-      console.log('1qwe');
-      resetRange(id);
-    }
-  }, []);
+  }, [rangeIsExist, id, newRange]);
 
   return (
     <div className='flex flex-col justify-between'>

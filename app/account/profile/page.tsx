@@ -1,6 +1,7 @@
 import SelectCountry from '@/app/_components/SelectCountry';
 import UpdateProfileForm from '@/app/_components/UpdateProfileForm';
-import { Metadata } from 'next';
+
+import { type Metadata } from 'next';
 
 export const metadata: Metadata = {
   title: 'Update your guest profile',

@@ -15,7 +15,7 @@ function TextExpander({ children }: Props) {
   useLayoutEffect(() => {
     if (fullTextRef.current) {
       const height = fullTextRef.current.getBoundingClientRect().height;
-      setExpandedHeight(height + 20);
+      setExpandedHeight(height);
     }
   }, []);
 
@@ -28,7 +28,7 @@ function TextExpander({ children }: Props) {
 
   return (
     <span
-      className={`inline-block align-top transition-all duration-300 ${
+      className={`relative inline-block align-top transition-all duration-300 ${
         !isExpanded && expandedHeight ? 'overflow-hidden' : 'overflow-visible'
       }`}
       style={expandedHeight ? { height: `${expandedHeight}px` } : undefined}

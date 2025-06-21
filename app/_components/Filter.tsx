@@ -36,7 +36,7 @@ export default function Filter() {
   function handleFilter(capacity: CapacityFilterType) {
     const params = new URLSearchParams(searchParams);
     params.set('capacity', capacity);
-    router.replace(`${pathname}?${params.toString()}`);
+    router.push(`${pathname}?${params.toString()}`);
   }
 
   return (

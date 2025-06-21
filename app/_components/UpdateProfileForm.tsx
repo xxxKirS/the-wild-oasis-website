@@ -1,14 +1,12 @@
 'use client';
 
-import { ReactNode, useState } from 'react';
+import { type ReactNode } from 'react';
 
 export default function UpdateProfileForm({
   children,
 }: {
   children: ReactNode;
 }) {
-  const [count, setCount] = useState(0);
-
   const countryFlag = 'pt.jpg';
   const nationality = 'portugal';
 

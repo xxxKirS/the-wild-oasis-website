@@ -16,10 +16,6 @@ const navLinks = [
     name: 'Cabins',
     href: '/cabins',
   },
-  // {
-  //   name: 'Account',
-  //   href: '/account',
-  // },
 ];
 
 type Props = {
@@ -31,7 +27,7 @@ export default function NavigationList({ session }: Props) {
 
   return (
     <>
-      {navLinks.map((link) => (
+      {navLinks?.map((link) => (
         <li key={link.name}>
           <Link
             href={link.href}
@@ -43,6 +39,7 @@ export default function NavigationList({ session }: Props) {
           </Link>
         </li>
       ))}
+
       <li>
         <Link
           href='/account'
@@ -50,12 +47,14 @@ export default function NavigationList({ session }: Props) {
             pathname.includes('/account') && 'text-accent-400'
           }`}
         >
-          {session?.user?.image && (
+          {!!session?.user?.image && (
             <Image
               src={session.user.image}
               alt={session.user.name || 'User image'}
               className='w-6 h-6 rounded-full'
               referrerPolicy='no-referrer'
+              width={24}
+              height={24}
             />
           )}
           {session?.user?.name && <span>{session.user.name}</span>}

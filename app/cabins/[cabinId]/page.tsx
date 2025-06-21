@@ -5,7 +5,7 @@ import { getCabin, getCabins } from '@/app/_lib/data-service';
 import React, { Suspense } from 'react';
 
 type Props = {
-  params: { cabinId: string };
+  params: Promise<{ cabinId: string }>;
 };
 
 export async function generateMetadata({ params }: Props) {
