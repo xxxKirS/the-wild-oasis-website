@@ -1,5 +1,3 @@
-import type { User } from 'next-auth';
-
 export type Settings = {
   minBookingLength: number;
   maxBookingLength: number;
@@ -19,13 +17,23 @@ export type Cabin = {
   description?: string;
 };
 
-export type Guest = {
+export type GuestCredentials = {
   fullName: string;
   email: string;
 };
 
-// export interface Session {
-//   user: User & {
-//     guestId: number;
-//   };
-// }
+export type Guest = GuestCredentials & {
+  id: number;
+  nationality: string;
+  countryFlag: string;
+  nationalID: string;
+  mobileNumber: number;
+  created_at: string;
+};
+
+export type TUpdateGuest = {
+  nationality: string;
+  countryFlag: string;
+  fullName: string;
+  nationalID: string;
+};

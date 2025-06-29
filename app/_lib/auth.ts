@@ -1,7 +1,7 @@
 import NextAuth from 'next-auth';
 import Google from 'next-auth/providers/google';
 import { createGuest, getGuest } from './data-service';
-import type { Guest } from '../_types/types';
+import type { GuestCredentials } from '../_types/types';
 
 export const {
   handlers: { GET, POST },
@@ -24,7 +24,7 @@ export const {
         const guest = await getGuest(user.email!);
 
         if (!guest) {
-          const newGuest: Guest = {
+          const newGuest: GuestCredentials = {
             fullName: user.name!,
             email: user.email!,
           };
@@ -40,6 +40,7 @@ export const {
       const guest = await getGuest(session.user.email!);
 
       session.user.guestId = guest.id;
+      session.user.name = guest.fullName;
       return session;
     },
   },

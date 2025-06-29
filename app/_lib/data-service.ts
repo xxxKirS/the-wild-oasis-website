@@ -2,7 +2,12 @@ import { eachDayOfInterval } from 'date-fns';
 import { supabase } from './supabase';
 import { notFound } from 'next/navigation';
 
-import { type Cabin, type Guest } from '../_types/types';
+import {
+  type Cabin,
+  type GuestCredentials,
+  type Guest,
+  type TUpdateGuest,
+} from '../_types/types';
 import { type Settings } from '../_types/types';
 
 /////////////
@@ -55,7 +60,7 @@ export const getCabins = async function (): Promise<Cabin[]> {
 };
 
 // Guests are uniquely identified by their email address
-export async function getGuest(email: string) {
+export async function getGuest(email: string): Promise<Guest> {
   const { data } = await supabase
     .from('guests')
     .select('*')
@@ -155,7 +160,7 @@ export async function getCountries() {
 /////////////
 // CREATE
 
-export async function createGuest(newGuest: Guest) {
+export async function createGuest(newGuest: GuestCredentials) {
   const { data, error } = await supabase.from('guests').insert([newGuest]);
 
   if (error) {
@@ -186,13 +191,14 @@ export async function createBooking(newBooking) {
 // UPDATE
 
 // The updatedFields is an object which should ONLY contain the updated data
-export async function updateGuest(id, updatedFields) {
+export async function updateGuest(id: number, updatedFields: TUpdateGuest) {
+  console.log(id);
   const { data, error } = await supabase
     .from('guests')
     .update(updatedFields)
-    .eq('id', id)
-    .select()
-    .single();
+    .eq('id', id);
+  // .select()
+  // .single();
 
   if (error) {
     console.error(error);
