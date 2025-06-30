@@ -37,3 +37,27 @@ export type TUpdateGuest = {
   fullName: string;
   nationalID: string;
 };
+
+export type Booking = {
+  id: number;
+  cabinId: number;
+  guestId: number;
+  startDate: string;
+  endDate: string;
+  numNights: number;
+  numGuests: number;
+  cabinPrice: number;
+  extrasPrice: number;
+  status: 'checked-in' | 'checked-out' | 'unconfirmed';
+  totalPrice: number;
+  created_at: string;
+  hasBreakfast: boolean;
+  isPaid: boolean;
+  observations?: string;
+  cabins: {
+    name: string;
+    images: string[];
+  };
+};
+
+export type Bookings = Booking[];

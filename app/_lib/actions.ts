@@ -3,7 +3,7 @@
 import { revalidatePath } from 'next/cache';
 import type { TUpdateGuest } from '../_types/types';
 import { auth, signIn, signOut } from './auth';
-import { updateGuest } from './data-service';
+import { deleteBooking, getBookings, updateGuest } from './data-service';
 
 export async function signInAction() {
   await signIn('google', {
@@ -52,4 +52,20 @@ export async function updateProfile(formData: FormData): Promise<void> {
     // Indicate success; reload should be handled in the client component
     revalidatePath('/account/profile');
   }
+}
+
+export async function deleteReservation(bookingId: number) {
+  const session = await auth();
+
+  if (!session)
+    throw new Error('You must be signed in to delete a reservation.');
+
+  const guestBookings = await getBookings(session.user.guestId!);
+
+  if (!guestBookings.find((booking) => booking.id === bookingId))
+    throw new Error('You can only delete your own reservations.');
+
+  await deleteBooking(bookingId);
+
+  revalidatePath('/account/reservations');
 }
