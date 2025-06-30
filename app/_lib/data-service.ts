@@ -8,6 +8,8 @@ import {
   type Guest,
   type TUpdateGuest,
   type Bookings,
+  type Booking,
+  type TGetBookings,
 } from '../_types/types';
 import { type Settings } from '../_types/types';
 
@@ -72,7 +74,7 @@ export async function getGuest(email: string): Promise<Guest> {
   return data;
 }
 
-export async function getBooking(id: number) {
+export async function getBooking(id: number): Promise<Booking> {
   const { data, error, count } = await supabase
     .from('bookings')
     .select('*')
@@ -88,21 +90,25 @@ export async function getBooking(id: number) {
 }
 
 export async function getBookings(guestId: number) {
-  const { data, error, count } = await supabase
+  const { data, error } = await supabase
     .from('bookings')
-    // We actually also need data on the cabins as well. But let's ONLY take the data that we actually need, in order to reduce downloaded data.
     .select(
       'id, created_at, startDate, endDate, numNights, numGuests, totalPrice, guestId, cabinId, cabins(name, images)'
     )
     .eq('guestId', guestId)
     .order('startDate');
 
-  if (error) {
+  if (error || !data) {
     console.error(error);
     throw new Error('Bookings could not get loaded');
   }
 
-  return data;
+  // Ensure cabins is a single object and types are correct
+  const bookings: TGetBookings = data.map((booking) => ({
+    ...booking,
+    cabins: Array.isArray(booking.cabins) ? booking.cabins[0] : booking.cabins,
+  }));
+  return bookings;
 }
 
 export async function getBookedDatesByCabinId(cabinId: number) {

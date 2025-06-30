@@ -54,10 +54,24 @@ export type Booking = {
   hasBreakfast: boolean;
   isPaid: boolean;
   observations?: string;
+};
+
+export type Bookings = Booking[];
+
+export type TGetBooking = {
+  id: number;
+  created_at: string;
+  startDate: string;
+  endDate: string;
+  numNights: number;
+  numGuests: number;
+  totalPrice: number;
+  guestId: number;
+  cabinId: number;
   cabins: {
     name: string;
     images: string[];
   };
 };
 
-export type Bookings = Booking[];
+export type TGetBookings = TGetBooking[];

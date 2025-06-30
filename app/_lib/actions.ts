@@ -3,7 +3,13 @@
 import { revalidatePath } from 'next/cache';
 import type { TUpdateGuest } from '../_types/types';
 import { auth, signIn, signOut } from './auth';
-import { deleteBooking, getBookings, updateGuest } from './data-service';
+import {
+  deleteBooking,
+  getBookings,
+  updateBooking,
+  updateGuest,
+} from './data-service';
+import { redirect } from 'next/navigation';
 
 export async function signInAction() {
   await signIn('google', {
@@ -68,4 +74,32 @@ export async function deleteReservation(bookingId: number) {
   await deleteBooking(bookingId);
 
   revalidatePath('/account/reservations');
+}
+
+export async function updateReservation(formData: FormData) {
+  const session = await auth();
+
+  if (!session)
+    throw new Error('You must be signed in to delete a reservation.');
+
+  console.log(formData);
+
+  if (
+    formData.get('numGuests') &&
+    formData.get('bookingId') &&
+    formData.get('observations')
+  ) {
+    const bookingId = formData.get('bookingId') as string;
+    const numGuests = formData.get('numGuests') as string;
+    const observations = formData.get('observations')?.slice(0, 500) as string;
+
+    const guestBookings = await getBookings(session!.user.guestId!);
+    if (!guestBookings.find((booking) => booking.id === +bookingId))
+      throw new Error('You can only edit your own reservations.');
+
+    await updateBooking(+bookingId, { numGuests, observations });
+
+    revalidatePath(`/account/reservations/edit/${bookingId}`);
+    redirect(`/account/reservations`);
+  }
 }
