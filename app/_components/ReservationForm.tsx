@@ -2,18 +2,78 @@
 
 import Image from 'next/image';
 import Link from 'next/link';
+import SubmitButton from './SubmitButton';
 
 import { type User } from 'next-auth';
-import { type Cabin } from '../_types/types';
+import { type Cabin, type Settings } from '../_types/types';
+import { useReservationContext } from '../_context/ReservationContext';
+import { differenceInDays, isWithinInterval } from 'date-fns';
+import { createReservation } from '../_lib/actions';
+import { useMemo, useState } from 'react';
+import { formatCurrency } from '../_helpers/formatCurrency';
 
 type Props = {
   cabin: Cabin;
+  settings: Settings;
   user: User;
+  bookedDates: Date[];
 };
 
-function ReservationForm({ cabin, user }: Props) {
-  const { maxCapacity } = cabin;
-  // const { getRange } = useReservationContext();
+function ReservationForm({ cabin, user, bookedDates, settings }: Props) {
+  const { getRange, resetRange } = useReservationContext();
+  const { maxCapacity, regularPrice, discount, id: cabinId } = cabin;
+  const { breakfastPrice } = settings;
+
+  const [withBreakfast, setWithBreakfast] = useState(false);
+
+  const range = getRange(cabin.id);
+  const startDate = useMemo(() => range?.from ?? undefined, [range]);
+  const endDate = useMemo(() => range?.to ?? undefined, [range]);
+
+  const numNights = useMemo(
+    () =>
+      range?.from && range?.to ? differenceInDays(range.to, range.from) : 0,
+    [range]
+  );
+  const cabinPrice = useMemo(
+    () => numNights * (regularPrice - discount),
+    [numNights, regularPrice, discount]
+  );
+
+  const totalPrice = useMemo(
+    () => cabinPrice + (withBreakfast ? breakfastPrice * numNights : 0),
+    [cabinPrice, withBreakfast, numNights, breakfastPrice]
+  );
+
+  const bookingData =
+    startDate && endDate
+      ? {
+          cabinId,
+          startDate,
+          endDate,
+          numNights,
+          cabinPrice,
+          totalPrice,
+        }
+      : null;
+
+  const createBookingWithData = bookingData
+    ? createReservation.bind(null, bookingData)
+    : undefined;
+
+  function handleSubmitForm(formData: FormData) {
+    if (startDate && endDate && createBookingWithData) {
+      if (
+        bookedDates.some((date) =>
+          isWithinInterval(date, { start: startDate, end: endDate })
+        )
+      ) {
+        resetRange(cabinId);
+      } else {
+        createBookingWithData(formData);
+      }
+    }
+  }
 
   return (
     <div>
@@ -36,7 +96,10 @@ function ReservationForm({ cabin, user }: Props) {
         </Link>
       </div>
 
-      <form className='bg-primary-900 py-10 px-16 text-lg flex gap-5 flex-col'>
+      <form
+        className='bg-primary-900 py-10 px-16 text-lg flex gap-5 flex-col'
+        action={handleSubmitForm}
+      >
         <div className='space-y-2'>
           <label htmlFor='numGuests'>How many guests?</label>
           <select
@@ -56,6 +119,8 @@ function ReservationForm({ cabin, user }: Props) {
           </select>
         </div>
 
+        <input type='hidden' name='cabinData' value={cabin.id} id='cabinId' />
+
         <div className='space-y-2'>
           <label htmlFor='observations'>
             Anything we should know about your stay?
@@ -68,14 +133,37 @@ function ReservationForm({ cabin, user }: Props) {
           />
         </div>
 
-        <div className='flex justify-end items-center gap-6'>
-          <p className='text-primary-300 text-base'>Start by selecting dates</p>
+        <div className='flex items-center gap-4 space-y-2'>
+          <input
+            name='hasBreakfast'
+            id='hasBreakfast'
+            value={withBreakfast ? 'true' : 'false'}
+            onChange={(e) => setWithBreakfast(e.target.checked)}
+            type='checkbox'
+            className='w-5 h-5'
+          />
+          <label htmlFor='hasBreakfast'>Will you need breakfast?</label>
+        </div>
 
-          <button className='bg-accent-500 px-8 py-4 text-primary-800 font-semibold hover:bg-accent-600 transition-all disabled:cursor-not-allowed disabled:bg-gray-500 disabled:text-gray-300'>
-            Reserve now
-          </button>
+        <div className='flex justify-end items-center gap-6'>
+          {!numNights && (
+            <span className='text-base text-primary-200'>
+              Start by selecting dates
+            </span>
+          )}
+          <SubmitButton
+            label='Reserve now'
+            pendingLabel='Reserving...'
+            disabled={!bookingData}
+          />
         </div>
       </form>
+      <div className='bg-primary-800 text-primary-300 px-16 py-2'>
+        <p>
+          Total price:{' '}
+          <span className='font-bold'>{formatCurrency(totalPrice)}</span>
+        </p>
+      </div>
     </div>
   );
 }

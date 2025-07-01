@@ -1,9 +1,10 @@
 'use server';
 
 import { revalidatePath } from 'next/cache';
-import type { TUpdateGuest } from '../_types/types';
+import type { TNewBooking, TUpdateGuest } from '../_types/types';
 import { auth, signIn, signOut } from './auth';
 import {
+  createBooking,
   deleteBooking,
   getBookings,
   updateBooking,
@@ -90,7 +91,7 @@ export async function updateReservation(formData: FormData) {
     formData.get('observations')
   ) {
     const bookingId = formData.get('bookingId') as string;
-    const numGuests = formData.get('numGuests') as string;
+    const numGuests = +formData.get('numGuests')! as number;
     const observations = formData.get('observations')?.slice(0, 500) as string;
 
     const guestBookings = await getBookings(session!.user.guestId!);
@@ -101,5 +102,47 @@ export async function updateReservation(formData: FormData) {
 
     revalidatePath(`/account/reservations/edit/${bookingId}`);
     redirect(`/account/reservations`);
+  }
+}
+
+type CreateBookingData = {
+  cabinId: number;
+  startDate: Date;
+  endDate: Date;
+  numNights: number;
+  cabinPrice: number;
+  totalPrice: number;
+};
+
+export async function createReservation(
+  bookingData: CreateBookingData,
+  formData: FormData
+) {
+  const session = await auth();
+
+  if (!session)
+    throw new Error('You must be signed in to create a reservation.');
+
+  if (formData.get('numGuests')) {
+    const observations = formData.get('observations')?.slice(0, 500) as string;
+    const numGuests = +formData.get('numGuests')! as number;
+    const hasBreakfast = formData.get('hasBreakfast') === 'true';
+
+    const newBooking: TNewBooking = {
+      ...bookingData,
+      numGuests,
+      observations,
+      extrasPrice: 0,
+      hasBreakfast,
+      isPaid: false,
+      guestId: session.user.guestId!,
+      status: 'unconfirmed',
+      created_at: new Date(),
+    };
+
+    await createBooking(newBooking);
+
+    revalidatePath(`/account/cabins/${bookingData.cabinId}`);
+    redirect(`/cabins/thankyou`);
   }
 }

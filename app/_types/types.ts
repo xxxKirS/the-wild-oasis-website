@@ -38,6 +38,11 @@ export type TUpdateGuest = {
   nationalID: string;
 };
 
+export type TUpdateBooking = {
+  numGuests: number;
+  observations?: string;
+};
+
 export type Booking = {
   id: number;
   cabinId: number;
@@ -54,6 +59,22 @@ export type Booking = {
   hasBreakfast: boolean;
   isPaid: boolean;
   observations?: string;
+};
+
+export type TNewBooking = {
+  cabinId: number;
+  startDate: Date;
+  endDate: Date;
+  numNights: number;
+  numGuests: number;
+  observations?: string;
+  extrasPrice: number;
+  totalPrice: number;
+  isPaid: boolean;
+  hasBreakfast: boolean;
+  guestId: number;
+  status: 'checked-in' | 'checked-out' | 'unconfirmed';
+  created_at: Date;
 };
 
 export type Bookings = Booking[];

@@ -26,7 +26,12 @@ export default async function Reservations({ cabin }: Props) {
         cabin={cabin}
       />
       {session?.user ? (
-        <ReservationForm cabin={cabin} user={session.user} />
+        <ReservationForm
+          cabin={cabin}
+          settings={settings}
+          user={session.user}
+          bookedDates={bookedDates}
+        />
       ) : (
         <LoginMessage />
       )}

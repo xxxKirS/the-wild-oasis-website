@@ -1,19 +1,25 @@
 'use client';
 
-import { isWithinInterval } from 'date-fns';
+import {
+  differenceInDays,
+  isPast,
+  isSameDay,
+  isWithinInterval,
+} from 'date-fns';
 import { useReservationContext } from '../_context/ReservationContext';
 import { useEffect, useMemo, useState } from 'react';
 
 import { type DateRange, DayPicker } from 'react-day-picker';
 import { type Cabin, type Settings } from '../_types/types';
+import { formatCurrency } from '../_helpers/formatCurrency';
 
-function isAlreadyBooked(range: DateRange, datesArr) {
-  return (
-    range.from &&
-    range.to &&
-    datesArr.some((date) =>
-      isWithinInterval(date, { start: range.from, end: range.to })
-    )
+function isAlreadyBooked(range: DateRange, datesArr: Date[]) {
+  if (!range?.from || !range?.to) return false;
+
+  return datesArr.some((date) =>
+    range.from && range.to
+      ? isWithinInterval(date, { start: range.from, end: range.to })
+      : false
   );
 }
 
@@ -30,13 +36,24 @@ function DateSelector({ settings, cabin, bookedDates }: Props) {
     to: undefined,
   });
 
-  const numNights = 23;
   const { discount, regularPrice, id } = cabin;
+  const numNights =
+    selectedRange?.from != null && selectedRange?.to != null
+      ? differenceInDays(selectedRange.to, selectedRange.from)
+      : 0;
+
   const cabinPrice = numNights * (regularPrice - discount);
 
   // SETTINGS
   const { minBookingLength, maxBookingLength } = settings;
   const rangeIsExist = useMemo(() => getRange(id), [id, getRange]);
+
+  const isRangeBooked = useMemo(() => {
+    if (selectedRange?.from && selectedRange?.to) {
+      return isAlreadyBooked(selectedRange, bookedDates);
+    }
+    return false;
+  }, [selectedRange, bookedDates]);
 
   useEffect(() => {
     if (!rangeIsExist) {
@@ -46,6 +63,16 @@ function DateSelector({ settings, cabin, bookedDates }: Props) {
     }
   }, [rangeIsExist, id, newRange]);
 
+  useEffect(() => {
+    if (isRangeBooked) {
+      setSelectedRange({
+        from: undefined,
+        to: undefined,
+      });
+      resetRange(id);
+    }
+  }, [isRangeBooked, resetRange, id]);
+
   return (
     <div className='flex flex-col justify-between'>
       <DayPicker
@@ -53,8 +80,15 @@ function DateSelector({ settings, cabin, bookedDates }: Props) {
         mode='range'
         selected={selectedRange}
         onSelect={(range) => {
-          setSelectedRange(range!);
-          setRange(range!, id);
+          if (!isAlreadyBooked(range!, bookedDates)) {
+            setSelectedRange(range!);
+            setRange(range!, id);
+          } else {
+            setSelectedRange({
+              from: undefined,
+              to: undefined,
+            });
+          }
         }}
         min={minBookingLength + 1}
         max={maxBookingLength}
@@ -63,6 +97,10 @@ function DateSelector({ settings, cabin, bookedDates }: Props) {
         toYear={new Date().getFullYear() + 5}
         // captionLayout='dropdown'
         numberOfMonths={2}
+        disabled={(curDate) =>
+          isPast(curDate) ||
+          bookedDates.some((date) => isSameDay(date, curDate))
+        }
       />
 
       <div className='flex items-center justify-between px-8 bg-accent-500 text-primary-800 h-[72px]'>
@@ -87,7 +125,9 @@ function DateSelector({ settings, cabin, bookedDates }: Props) {
               </p>
               <p>
                 <span className='text-lg font-bold uppercase'>Total</span>{' '}
-                <span className='text-2xl font-semibold'>${cabinPrice}</span>
+                <span className='text-xl font-semibold'>
+                  {formatCurrency(cabinPrice)}
+                </span>
               </p>
             </>
           ) : null}
