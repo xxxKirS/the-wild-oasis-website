@@ -1,12 +1,10 @@
 import { getBookedDatesByCabinId, getCabin } from '@/app/_lib/data-service';
 
-type GetType = (
+export const GET = async (
   request: Request,
-  { params }: { params: { cabinId: string } }
-) => Promise<Response>;
-
-export const GET: GetType = async (request, { params }) => {
-  const { cabinId } = params;
+  { params }: { params: Promise<{ cabinId: string }> }
+) => {
+  const { cabinId } = await params;
 
   try {
     const [cabin, bookedDates] = await Promise.all([

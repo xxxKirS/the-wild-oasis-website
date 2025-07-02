@@ -9,7 +9,7 @@ type Props = {
 };
 
 export async function generateMetadata({ params }: Props) {
-  const { cabinId } = await params;
+  const { cabinId } = await params; // no await
   const { name } = await getCabin(+cabinId);
   return { title: `Cabin ${name}` };
 }
@@ -23,7 +23,7 @@ export async function generateStaticParams() {
 }
 
 export default async function Page({ params }: Props) {
-  const { cabinId } = await params;
+  const { cabinId } = await params; // no await
   const cabin = await getCabin(+cabinId);
 
   const { name } = cabin;

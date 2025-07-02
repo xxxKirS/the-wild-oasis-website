@@ -3,7 +3,7 @@ import Link from 'next/link';
 
 import about1 from '@/public/about-1.jpg';
 import about2 from '@/public/about-2.jpg';
-import { Metadata } from 'next';
+import { type Metadata } from 'next';
 import { getCabins } from '../_lib/data-service';
 
 export const revalidate = 86400;

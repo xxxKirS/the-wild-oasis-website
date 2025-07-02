@@ -1,12 +1,11 @@
 import { updateReservation } from '@/app/_lib/actions';
 import { auth } from '@/app/_lib/auth';
 import { getBooking, getBookings, getCabin } from '@/app/_lib/data-service';
-import type { Params } from 'next/dist/server/request/params';
 
 import SubmitButton from '@/app/_components/SubmitButton';
 
 type Props = {
-  params: Params;
+  params: Promise<{ id: string }>;
 };
 
 export default async function Page({ params }: Props) {
